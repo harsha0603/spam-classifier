@@ -2,12 +2,11 @@ import os
 import sys
 import nltk
 import string
-import pickle
-import pandas as pd
 from dataclasses import dataclass
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
+import pandas as pd
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -15,7 +14,6 @@ from nltk.stem import PorterStemmer
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
-
 
 @dataclass
 class DataTransformationConfig:
@@ -110,8 +108,8 @@ class DataTransformation:
             )
 
             return (
-                train_df,
-                test_df,
+                train_df[['transformed_text', 'encoded_target']],
+                test_df[['transformed_text', 'encoded_target']],
                 self.data_transformation_config.preprocessor_obj_file_path,
             )
 
