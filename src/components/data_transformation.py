@@ -17,7 +17,7 @@ from src.utils import save_object
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path = os.path.join('artifacts', "full_preprocessor.pkl")
+    preprocessor_obj_file_path = os.path.join('artifacts', "full_preprocessor_final.pkl")
 
 class TextPreprocessor(BaseEstimator, TransformerMixin):
     def __init__(self, stopwords, stemmer):
@@ -34,8 +34,8 @@ class TextPreprocessor(BaseEstimator, TransformerMixin):
         text = text.lower()
         text = nltk.word_tokenize(text)
         
-        y = [word for word in text if word.isalnum()]
-        y = [word for word in y if word not in self.stopwords and word not in string.punctuation]
+        # Remove non-alphanumeric words and stopwords
+        y = [word for word in text if word.isalnum() and word not in self.stopwords and word not in string.punctuation]
         y = [self.stemmer.stem(word) for word in y]
         
         return " ".join(y)

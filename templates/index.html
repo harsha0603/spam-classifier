@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Classification</title>
+</head>
+<body>
+    <h1>Spam Classification</h1>
+    <form action="/predict" method="post">
+        <label for="text">Enter your message:</label>
+        <textarea id="text" name="text" rows="4" cols="50" required></textarea><br>
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if prediction %}
+    <h2>Prediction: {{ prediction }}</h2>
+    {% endif %}
+</body>
+</html>
