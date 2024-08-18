@@ -5,9 +5,10 @@ import string
 from dataclasses import dataclass
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
-
+from sklearn.preprocessing import LabelEncoder
+import numpy as np 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
@@ -17,7 +18,7 @@ from src.utils import save_object
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path = os.path.join('artifacts', "full_preprocessor_final.pkl")
+    preprocessor_obj_file_path = os.path.join('artifacts', "data_preprocessor_vector.pkl")
 
 class TextPreprocessor(BaseEstimator, TransformerMixin):
     def __init__(self, stopwords, stemmer):
@@ -40,38 +41,26 @@ class TextPreprocessor(BaseEstimator, TransformerMixin):
         
         return " ".join(y)
 
-class LabelEncoderPipelineFriendly(BaseEstimator, TransformerMixin):
-    def __init__(self):
-        self.encoder = LabelEncoder()
-
-    def fit(self, X, y=None):
-        self.encoder.fit(X)
-        return self
-
-    def transform(self, X, y=None):
-        return self.encoder.transform(X)
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 class DataTransformation:
     def __init__(self):
-        self.data_transformation_config = DataTransformationConfig()
+        self.vectorizer = TfidfVectorizer()
+        self.data_transformation_config = DataTransformationConfig()  # Initialize the config
 
     def get_data_transformer_object(self):
-        '''
-        This function creates a complete pipeline with text preprocessing and label encoding.
-        '''
-        try:
-            pipeline = Pipeline([
-                ('text_preprocessor', TextPreprocessor(stopwords.words('english'), PorterStemmer())),
-                ('label_encoder', LabelEncoderPipelineFriendly())
-            ])
-            return pipeline
-        except Exception as e:
-            raise CustomException(e, sys)
+        # Return the preprocessing pipeline or object
+        return self.vectorizer
 
     def initiate_data_transformation(self, train_path, test_path):
         try:
-            train_df = pd.read_csv(train_path)
-            test_df = pd.read_csv(test_path)
+            import os
+
+            train_file_path = os.path.join("artifacts", "train.csv")
+            test_file_path = os.path.join("artifacts", "test.csv")
+
+            train_df = pd.read_csv(train_file_path, encoding='ISO-8859-1')
+            test_df = pd.read_csv(test_file_path, encoding='ISO-8859-1')
 
             logging.info("Read train and test data completed")
 
@@ -92,12 +81,17 @@ class DataTransformation:
             train_df.drop_duplicates(keep='first', inplace=True)
             test_df.drop_duplicates(keep='first', inplace=True)
 
-            # Apply the pipeline on text and target columns
-            train_df['transformed_text'] = preprocessing_obj.named_steps['text_preprocessor'].transform(train_df['text'])
-            train_df['encoded_target'] = preprocessing_obj.named_steps['label_encoder'].fit_transform(train_df['target'])
+            # Apply label encoding to the target column
+            encoder = LabelEncoder()
+            train_df['encoded_target'] = encoder.fit_transform(train_df['target'])
+            test_df['encoded_target'] = encoder.transform(test_df['target'])
 
-            test_df['transformed_text'] = preprocessing_obj.named_steps['text_preprocessor'].transform(test_df['text'])
-            test_df['encoded_target'] = preprocessing_obj.named_steps['label_encoder'].transform(test_df['target'])
+            # Apply the pipeline on the text column
+            X_train = preprocessing_obj.fit_transform(train_df['text']).toarray()
+            X_test = preprocessing_obj.transform(test_df['text']).toarray()
+
+            y_train = train_df['encoded_target'].values
+            y_test = test_df['encoded_target'].values
 
             logging.info("Data transformation completed")
 
@@ -107,11 +101,8 @@ class DataTransformation:
                 obj=preprocessing_obj
             )
 
-            return (
-                train_df[['transformed_text', 'encoded_target']],
-                test_df[['transformed_text', 'encoded_target']],
-                self.data_transformation_config.preprocessor_obj_file_path,
-            )
+            # Return the transformed data
+            return X_train, X_test, y_train, y_test
 
         except Exception as e:
             raise CustomException(e, sys)

@@ -4,13 +4,14 @@ from flask import Flask, request, render_template
 import pandas as pd
 from src.pipeline.predict_pipeline import PredictPipeline
 from src.exception import CustomException
+
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/predict', methods=['GET', 'POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
         text = request.form.get('text')
