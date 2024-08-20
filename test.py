@@ -1,14 +1,23 @@
 test_data = [
-    "Congratulations! You've won a $1000 gift card. Click here to claim your prize.",
-    "Reminder: Your appointment is scheduled for tomorrow at 10 AM.",
-    "Earn money from home! Sign up now to start earning extra income.",
-    "Meeting agenda: Discuss project milestones and next steps.",
-    "Exclusive offer just for you: Buy one get one free on all items.",
-    "Important: Please review the attached document before the meeting.",
-    "Don't miss out on this limited-time offer. Act fast to save big!",
-    "Can you send me the report by end of day? Thanks.",
-    "Get out of debt now! Call this number to learn more about our debt relief program.",
-    "The team meeting is postponed to next week. Please update your calendar."
+    "Congratulations! You have won a $1,000 gift card. Click the link to claim your prize!"
+
+"Urgent: Your account has been compromised. Click here to secure it immediately."
+
+"Dear Customer, Your bank account is suspended. Verify your account details here."
+
+"Get rich quick! Earn $5,000 a week from home with this simple method."
+
+"Limited-time offer! Buy one, get one free on all electronics. Click now!"
+
+"You have a new message waiting. Open this link to read it now!"
+
+"Your package is on hold. Provide your address to ensure delivery."
+
+"Work from home and make $500/day with no experience required! Click here to start."
+
+"Act now! You are eligible for a low-interest rate on your loan. Apply today!"
+
+"You’ve been selected for an exclusive discount. Redeem your code now!",
 ]
 
 from src.pipeline.predict_pipeline import PredictPipeline

@@ -7,7 +7,7 @@ from src.utils import load_object
 class PredictPipeline:
     def __init__(self):
         self.model_path = os.path.join("artifacts", "model.pkl")
-        self.preprocessor_path = os.path.join("artifacts", "data_preprocessor_vector.pkl")
+        self.preprocessor_path = os.path.join("artifacts", "vectorizer.pkl")
 
     def predict(self, features):
         try:
